@@ -4,6 +4,7 @@ dotenv: ['Taskfile-private.env']
 
 tasks:
   build:
+    run: once
     cmds:
       - cmd: "{{.PYTHON}} -m build"
     vars:
@@ -11,6 +12,7 @@ tasks:
         sh: echo '{{if eq OS "windows"}}python{{else}}python3{{end}}'
 
   build-documentation:
+    run: once
     cmds:
       - cmd: "{{.PYTHON}} ./tools/build_docs.py"
     vars:
@@ -42,7 +44,11 @@ tasks:
         PYTHONPATH: "{{.USER_WORKING_DIR}}/src"
 
   publish:
+    deps: ['check-all', 'build']
     cmds:
-      - cmd: "{{.PYTHON}} -m twine -u {{.PYPI_USERNAME}} -p {{.PYPI_TOKEN}} dist/*"
+      - cmd: "{{.PYTHON}} -m twine upload -u {{.PYPI_USERNAME}} -p {{.PYPI_TOKEN}} dist/*"
     requires:
       vars: [PYPI_USERNAME, PYPI_TOKEN]
+    vars:
+      PYTHON:
+        sh: echo '{{if eq OS "windows"}}python{{else}}python3{{end}}'
