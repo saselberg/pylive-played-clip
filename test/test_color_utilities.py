@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import enable_imports_from_src_folder
+import enable_imports_from_src_folder  # noqa: F401
 import pylive_played_clip
 
 

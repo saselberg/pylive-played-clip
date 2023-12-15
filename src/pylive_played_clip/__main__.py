@@ -11,10 +11,8 @@ import logging
 import textwrap
 
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List, Optional
 
-
-import pylive_played_clip
 
 from pylive_played_clip import AbletonClipMonitor
 

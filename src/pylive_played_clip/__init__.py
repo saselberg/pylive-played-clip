@@ -4,15 +4,14 @@ The initialization code for the pylive_played_clip module
 __version_info__ = ('1', '0', '1')
 __version__ = ".".join(__version_info__)
 import logging
-import math
 import re
 import time
 
-from pathlib import Path
-from typing import Dict, Optional, List, Tuple
+from typing import Dict, Optional, Tuple
 
 import colorsys
 import live
+
 
 def hexToRgb(hex: str) -> Tuple[int, int, int]:
     '''Converts a hex number without a leading # into an RGB triplet
@@ -25,7 +24,10 @@ def hexToRgb(hex: str) -> Tuple[int, int, int]:
 
     Taken from https://stackoverflow.com/questions/29643352/converting-hex-to-rgb-value-in-python
     '''
-    return tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
+    red: int = int(hex[0:2], 16)
+    green: int = int(hex[2:4], 16)
+    blue: int = int(hex[4:6], 16)
+    return (red, green, blue)
 
 
 def rgbToColorInt(red: int, green: int, blue: int) -> int:
@@ -76,9 +78,11 @@ def colorIntToRgbString(color: int) -> str:
     (red, green, blue) = colorIntToRgb(color)
     return f"[{red}, {green}, {blue}]"
 
+
 class AbletonClipMonitorException(Exception):
     '''Ableton Clip Monitor Exception Class'''
     pass
+
 
 class AbletonClipMonitor():
     '''
@@ -112,8 +116,8 @@ class AbletonClipMonitor():
         self.ableton: live.Set = live.Set()
         self.num_of_tracks: int = 0
 
-        self.original_cell_color = {}
-        self.dim_clip_on_track = {}
+        self.original_cell_color: Dict = {}
+        self.dim_clip_on_track: Dict = {}
 
         if not self.dim_color_is_valid():
             raise AbletonClipMonitorException('The dim_color can be null or '
@@ -126,7 +130,7 @@ class AbletonClipMonitor():
                                               'less. We received '
                                               f"\"{self.dim_ratio}\".")
 
-    def dim_color_is_valid(self) -> None:
+    def dim_color_is_valid(self) -> bool:
         color_pattern = re.compile(r'^[0-9A-Fa-f]{6}$')
         color_ok: bool = False
 
@@ -138,7 +142,7 @@ class AbletonClipMonitor():
 
         return color_ok
 
-    def dim_ratio_is_valid(self) -> None:
+    def dim_ratio_is_valid(self) -> bool:
         ratio_is_ok: bool = False
         if self.dim_ratio >= 1.0:
             ratio_is_ok = True
@@ -188,10 +192,11 @@ class AbletonClipMonitor():
                 dim_color = self.get_dimmed_color_int_from_ratio(track_index)
 
             print(f"Dimming track {track_index}, clip {self.dim_clip_on_track[track_index]['clip_index']} to color {colorIntToRgbString(dim_color)}")
-            self.ableton.live.cmd('/live/clip/set/color',
-                         (track_index,
-                          self.dim_clip_on_track[track_index]['clip_index'],
-                          dim_color))
+            self.ableton.live.cmd(
+                '/live/clip/set/color',
+                (track_index,
+                 self.dim_clip_on_track[track_index]['clip_index'],
+                 dim_color))
             self.dim_clip_on_track[track_index] = None
 
     def get_dimmed_color_int_from_ratio(self, track_index) -> int:
@@ -228,8 +233,9 @@ class AbletonClipMonitor():
         playing_clip_index = self.ableton.live.query('/live/track/get/playing_slot_index', (track_index,))[1]
 
         logging.debug(f"Playing clip {playing_clip_index}")
-        if self.should_dim_clip_that_just_ended(track_index, playing_clip_index):
-            logging.debug(f"Dim clip color {track_index}:{playing_clip_index}:{self.dim_clip_on_track.get(track_index).get('clip_index')}")
+        dim_clip_info: Optional[Dict] = self.dim_clip_on_track.get(track_index)
+        if isinstance(dim_clip_info, Dict) and self.should_dim_clip_that_just_ended(track_index, playing_clip_index):
+            logging.debug(f"Dim clip color {track_index}:{playing_clip_index}:{dim_clip_info.get('clip_index')}")
             self.dim_color_of_played_clip(track_index)
 
         if playing_clip_index >= 0:
@@ -239,10 +245,11 @@ class AbletonClipMonitor():
     def should_dim_clip_that_just_ended(
             self,
             track_index: int,
-            playing_clip_index: int) -> None:
-        return (self.dim_clip_on_track.get(track_index)
-               and ( playing_clip_index < 0
-                     or playing_clip_index != self.dim_clip_on_track.get(track_index).get('clip_index')))
+            playing_clip_index: int) -> bool:
+        dim_clip_info: Optional[Dict] = self.dim_clip_on_track.get(track_index)
+        return (dim_clip_info is not None
+                and (playing_clip_index < 0
+                     or playing_clip_index != dim_clip_info.get('clip_index')))
 
     def monitor(self) -> None:
         '''The main routine'''

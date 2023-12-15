@@ -1,12 +1,10 @@
 #!/usr/bin/python3
-
 import pytest
 
-
-import enable_imports_from_src_folder
-import pylive_played_clip
+import enable_imports_from_src_folder  # noqa: F401
 
 from pylive_played_clip import AbletonClipMonitor, AbletonClipMonitorException
+
 
 def test_ableton_clip_monitor_constructor_upper() -> None:
     dim_color: str = 'FF0000'
