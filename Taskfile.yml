@@ -5,6 +5,7 @@ dotenv: ['Taskfile-private.env']
 tasks:
   build:
     run: once
+    deps: [clean-dist]
     cmds:
       - cmd: "{{.PYTHON}} -m build"
     vars:
@@ -18,6 +19,21 @@ tasks:
     vars:
       PYTHON:
         sh: echo '{{if eq OS "windows"}}python{{else}}python3{{end}}'
+
+  clean-all:
+    run: once
+    deps: [clean-dist, clean-documentation]
+
+  clean-dist:
+    run: once
+    cmds:
+      - cmd: rm -fR dist
+
+  clean-documentation:
+    run: once
+    cmds:
+      - cmd: rm -fR html
+      - cmd: rm -fR html.zip
 
   check-all:
     deps: [check-pytest, build-documentation, check-src, check-test]
@@ -44,7 +60,7 @@ tasks:
         PYTHONPATH: "{{.USER_WORKING_DIR}}/src"
 
   publish:
-    deps: ['check-all', 'build']
+    deps: ['clean-all', 'check-all', 'build']
     cmds:
       - cmd: "{{.PYTHON}} -m twine upload -u {{.PYPI_USERNAME}} -p {{.PYPI_TOKEN}} dist/*"
     requires:
