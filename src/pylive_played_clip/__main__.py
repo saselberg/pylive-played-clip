@@ -15,7 +15,7 @@ from typing import List
 
 from pylive_played_clip import AbletonClipMonitor
 
-import live
+import live  # type: ignore
 
 
 def _main() -> None:
