@@ -15,19 +15,24 @@ from typing import List
 
 from pylive_played_clip import AbletonClipMonitor
 
+import live
+
 
 def _main() -> None:
     '''The main routine for the module.'''
     args: argparse.Namespace = _parse_arguments()
     set_log_level(args)
 
-    ableton = AbletonClipMonitor(
-        dim_color=args.dim_color,
-        dim_ratio=float(args.dim_ratio),
-        polling_delay=float(args.polling_delay),
-        no_reset=bool(args.no_reset)
-    )
-    ableton.monitor()
+    try:
+        ableton = AbletonClipMonitor(
+            dim_color=args.dim_color,
+            dim_ratio=float(args.dim_ratio),
+            polling_delay=float(args.polling_delay),
+            no_reset=bool(args.no_reset)
+        )
+        ableton.monitor()
+    except live.exceptions.LiveConnectionError as error:
+        print(str(error))
 
 
 def _get_argument_parser() -> argparse.ArgumentParser:
