@@ -12,10 +12,11 @@ import textwrap
 
 from typing import List
 
+import live  # type: ignore
+
+import pylive_played_clip
 
 from pylive_played_clip import AbletonClipMonitor
-
-import live  # type: ignore
 
 
 def _main() -> None:
@@ -50,9 +51,6 @@ Command Line Examples
 > {basename}
 > {basename} --dim-color 555555 --log-level debug
 
-Selected Options:
-    --log-level, -l [debug]  Use this value as the build number.
-    -h                       Show the full help, including all options.
 """)
 
     description: str = textwrap.dedent('''\
@@ -91,6 +89,10 @@ reset the colors.
                         default='info',
                         choices=['fatal', 'error', 'warn', 'info', 'debug'],
                         help='Sets the logging level.')
+    parser.add_argument('--version', '-v',
+                        action='version',
+                        version=pylive_played_clip.__version__,
+                        help='Prints the version of the utility.')
 
     return parser
 
