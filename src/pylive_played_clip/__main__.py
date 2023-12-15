@@ -38,7 +38,7 @@ def _get_argument_parser() -> argparse.ArgumentParser:
     :return: The argparse.ArgumentParser before the arguments have been parsed.
     :rtype: :class:`argparse.ArgumentParser`
     """
-    basename: str = Path(__file__).name
+    basename: str = 'pylive-played-clip'
     usage = textwrap.dedent(f"""\
 {basename} --version
 
