@@ -1,0 +1,19 @@
+{% extends "!layout.html" %}
+
+  {% block menu %}
+    {{ super() }}
+    <p class="caption" role="heading">
+        <span class="caption-text">Navigation</span>
+    </p>
+    <ul>
+        <li class="toctree-l1">
+            <a class="reference internal" href="{{pathto('genindex')}}">Index</a>
+        </li>
+        <li class="toctree-l1">
+            <a class="reference internal" href="{{pathto('build-info')}}">Build Info</a>
+        </li>
+        <li class="toctree-l1">
+            <a class="reference internal" href="{{pathto('readme')}}">readme.md</a>
+        </li>
+    </ul>
+  {% endblock %}
