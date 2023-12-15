@@ -1,0 +1,48 @@
+version: '3'
+
+dotenv: ['Taskfile-private.env']
+
+tasks:
+  build:
+    cmds:
+      - cmd: "{{.PYTHON}} -m build"
+    vars:
+      PYTHON:
+        sh: echo '{{if eq OS "windows"}}python{{else}}python3{{end}}'
+
+  build-documentation:
+    cmds:
+      - cmd: "{{.PYTHON}} ./tools/build_docs.py"
+    vars:
+      PYTHON:
+        sh: echo '{{if eq OS "windows"}}python{{else}}python3{{end}}'
+
+  check-all:
+    deps: [check-pytest, build-documentation, check-src, check-test]
+
+  check-pytest:
+    run: once
+    cmds:
+      - cmd: "pytest test"
+
+  check-src:
+    run: once
+    cmds:
+      - cmd: "flake8 src"
+      - cmd: "mypy src"
+      - cmd: "pyright src"
+
+  check-test:
+    run: once
+    cmds:
+      - cmd: "flake8 test"
+      - cmd: "mypy test"
+      - cmd: "pyright test"
+    env:
+        PYTHONPATH: "{{.USER_WORKING_DIR}}/src"
+
+  publish:
+    cmds:
+      - cmd: "{{.PYTHON}} -m twine -u {{.PYPI_USERNAME}} -p {{.PYPI_TOKEN}} dist/*"
+    requires:
+      vars: [PYPI_USERNAME, PYPI_TOKEN]

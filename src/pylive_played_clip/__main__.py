@@ -11,7 +11,7 @@ import logging
 import textwrap
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 
 from pylive_played_clip import AbletonClipMonitor
@@ -22,21 +22,15 @@ def _main() -> None:
     args: argparse.Namespace = _parse_arguments()
     set_log_level(args)
 
-    dim_color: Optional[str] = args.dim_color
-    dim_ratio: float = args.dim_ratio
-    polling_delay: float = args.polling_delay
-
     ableton = AbletonClipMonitor(
-        dim_color=dim_color,
-        dim_ratio=dim_ratio,
-        polling_delay=polling_delay
+        dim_color=args.dim_color,
+        dim_ratio=float(args.dim_ratio),
+        polling_delay=float(args.polling_delay),
+        no_reset=bool(args.no_reset)
     )
     ableton.monitor()
 
 
-# --------------------------------------------------------------------------- #
-# General Script Utilities
-# --------------------------------------------------------------------------- #
 def _get_argument_parser() -> argparse.ArgumentParser:
     """Returns the argument parser. This function is used by
     sphinx to include the command line usage in the documentation.
@@ -83,6 +77,11 @@ reset the colors.
                         type=float,
                         dest='polling_delay',
                         help=('Default 0.1 second. The polling delay'))
+    parser.add_argument('--no-reset',
+                        action='store_true',
+                        dest='no_reset',
+                        help=('If provided, the colors will not be reset '
+                              'when Ableton stops.'))
     parser.add_argument('--log-level', '-l',
                         dest='log_level',
                         default='info',
@@ -92,6 +91,9 @@ reset the colors.
     return parser
 
 
+# --------------------------------------------------------------------------- #
+# General Script Utilities
+# --------------------------------------------------------------------------- #
 def _parse_arguments(test_args: List[str] = []) -> argparse.Namespace:
     """Used to parse the command line arguments
 

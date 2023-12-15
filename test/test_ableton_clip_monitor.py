@@ -28,6 +28,17 @@ def test_ableton_clip_monitor_constructor_lower() -> None:
     assert ableton_monitor.dim_ratio == dim_ratio
 
 
+def test_ableton_clip_monitor_constructor_leading_hash() -> None:
+    dim_color: str = '#fF0000'
+    dim_ratio: float = 4
+    ableton_monitor: AbletonClipMonitor = AbletonClipMonitor(
+        dim_color=dim_color,
+        dim_ratio=dim_ratio)
+
+    assert ableton_monitor.dim_color == dim_color[1:]
+    assert ableton_monitor.dim_ratio == dim_ratio
+
+
 def test_ableton_clip_monitor_constructor_with_ratio_error() -> None:
     dim_ratio: float = 0.1
     with pytest.raises(AbletonClipMonitorException):

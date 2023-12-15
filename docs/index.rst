@@ -7,6 +7,8 @@ Pylive Played Clip
    :titlesonly:
    :caption: Documentation:
 
+   api <api/index.rst>
+   Contributor Notes <contributor_notes/index.rst>
    Project README.md <readme.md>
 
 Introduction
@@ -89,8 +91,8 @@ user install will also setup the command line utility.
 Using
 =====
 
-To use, Ableton should already be up and running. Then from a console launch
-pylive-played-clip as shown below.
+To use, Ableton should already be up and running. Then from a command line
+terminal launch ``pylive-played-clip`` as shown below.
 
 .. code-block:: console
 
@@ -118,6 +120,8 @@ The command line utility has the following options:
   wait this amount of time, and then re-scan. Should it detect that a clip was
   playing in the previous scan but not playing in the current scan, the color
   will be changed.
+* **--no-reset**: If provided, then the clip colors will not be reset when
+  Ableton stops playing.
 
 Examples
 --------

@@ -13,3 +13,4 @@ html/
 html.zip
 manual_test/
 report-task.txt
+Taskfile-private.env
